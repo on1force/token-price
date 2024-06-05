@@ -7,13 +7,13 @@ A TypeScript library for checking token prices (currently on Uniswap V2 and V3 E
 Install the library using npm:
 
 ```bash
-npm install check-price
+npm install @on1force/token-price
 ```
 
 ## Usage
 ### Initiate
 ```typescript
-import { CheckPrice } from 'check-price';
+import { CheckPrice } from '@on1force/token-price';
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');

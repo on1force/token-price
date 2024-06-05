@@ -29,9 +29,14 @@ class CheckPrice {
      */
     getEthUsdPrice() {
         return __awaiter(this, void 0, void 0, function* () {
-            const oracle = new ethers_1.Contract(this.chainlinkOracleAddress, abi_1.chainlink_abi, this.provider);
-            const price = yield oracle.latestAnswer();
-            return parseFloat((0, ethers_1.formatUnits)(price, 8));
+            try {
+                const oracle = new ethers_1.Contract(this.chainlinkOracleAddress, abi_1.chainlink_abi, this.provider);
+                const price = yield oracle.latestAnswer();
+                return parseFloat((0, ethers_1.formatUnits)(price, 8));
+            }
+            catch (error) {
+                throw new Error("Failed to get ETH/USD price from Chainlink oracle.\n" + error);
+            }
         });
     }
     /**
@@ -41,11 +46,16 @@ class CheckPrice {
      */
     getV2Pool(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const factory = new ethers_1.Contract(this.uniswapV2FactoryAddress, abi_1.uniswap_v2_factory_abi, this.provider);
-            const pool = yield factory.getPair(token, this.WETH_ADDRESS);
-            if (pool === ethers_1.ZeroAddress)
-                return null;
-            return pool;
+            try {
+                const factory = new ethers_1.Contract(this.uniswapV2FactoryAddress, abi_1.uniswap_v2_factory_abi, this.provider);
+                const pool = yield factory.getPair(token, this.WETH_ADDRESS);
+                if (pool === ethers_1.ZeroAddress)
+                    return null;
+                return pool;
+            }
+            catch (error) {
+                throw new Error("Failed to get Uniswap V2 pool address.\n" + error);
+            }
         });
     }
     /**
@@ -55,15 +65,20 @@ class CheckPrice {
      */
     getV2PriceWeth(pool_address) {
         return __awaiter(this, void 0, void 0, function* () {
-            const pool = new ethers_1.Contract(pool_address, abi_1.uniswap_v2_pair_abi, this.provider);
-            const [token0, [reserve0, reserve1]] = yield Promise.all([
-                pool.token0(),
-                pool.getReserves()
-            ]);
-            const isToken0 = token0 !== this.WETH_ADDRESS;
-            const reserve_token = isToken0 ? reserve0 : reserve1;
-            const reserve_weth = isToken0 ? reserve1 : reserve0;
-            return Number(reserve_token) / Number(reserve_weth);
+            try {
+                const pool = new ethers_1.Contract(pool_address, abi_1.uniswap_v2_pair_abi, this.provider);
+                const [token0, [reserve0, reserve1]] = yield Promise.all([
+                    pool.token0(),
+                    pool.getReserves()
+                ]);
+                const isToken0 = token0 !== this.WETH_ADDRESS;
+                const reserve_token = isToken0 ? reserve0 : reserve1;
+                const reserve_weth = isToken0 ? reserve1 : reserve0;
+                return Number(reserve_token) / Number(reserve_weth);
+            }
+            catch (error) {
+                throw new Error("Failed to get Uniswap V2 price.\n" + error);
+            }
         });
     }
     /**
@@ -73,16 +88,21 @@ class CheckPrice {
      */
     getV3Pool(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const factory = new ethers_1.Contract(this.uniswapV3FactoryAddress, abi_1.uniswap_v3_factory_abi, this.provider);
-            let pair = null;
-            for (const fee of this.feeTiers) {
-                pair = yield factory.getPool(token, this.WETH_ADDRESS, fee);
-                if (pair !== ethers_1.ZeroAddress)
-                    break;
+            try {
+                const factory = new ethers_1.Contract(this.uniswapV3FactoryAddress, abi_1.uniswap_v3_factory_abi, this.provider);
+                let pair = null;
+                for (const fee of this.feeTiers) {
+                    pair = yield factory.getPool(token, this.WETH_ADDRESS, fee);
+                    if (pair !== ethers_1.ZeroAddress)
+                        break;
+                }
+                if (!pair || pair === ethers_1.ZeroAddress)
+                    return null;
+                return pair;
             }
-            if (!pair || pair === ethers_1.ZeroAddress)
-                return null;
-            return pair;
+            catch (error) {
+                throw new Error("Failed to get Uniswap V3 pool address.\n" + error);
+            }
         });
     }
     /**
@@ -92,10 +112,15 @@ class CheckPrice {
      */
     getV3PriceWeth(pool_address) {
         return __awaiter(this, void 0, void 0, function* () {
-            const pool = new ethers_1.Contract(pool_address, abi_1.uniswap_v3_pair_abi, this.provider);
-            const { sqrtPriceX96 } = yield pool.slot0();
-            const price = Math.pow((Number(sqrtPriceX96) / Math.pow(2, 96)), 2);
-            return price;
+            try {
+                const pool = new ethers_1.Contract(pool_address, abi_1.uniswap_v3_pair_abi, this.provider);
+                const { sqrtPriceX96 } = yield pool.slot0();
+                const price = Math.pow((Number(sqrtPriceX96) / Math.pow(2, 96)), 2);
+                return price;
+            }
+            catch (error) {
+                throw new Error("Failed to get Uniswap V3 price.\n" + error);
+            }
         });
     }
     /**
@@ -111,29 +136,34 @@ class CheckPrice {
     */
     getPrice(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [v2Pool, v3Pool, eth_usd] = yield Promise.all([
-                this.getV2Pool(token),
-                this.getV3Pool(token),
-                this.getEthUsdPrice()
-            ]);
-            let v2Price = null;
-            let v3Price = null;
-            let price_usd = null;
-            if (v2Pool) {
-                v2Price = yield this.getV2PriceWeth(v2Pool);
-                price_usd = v2Price * eth_usd;
+            try {
+                const [v2Pool, v3Pool, eth_usd] = yield Promise.all([
+                    this.getV2Pool(token),
+                    this.getV3Pool(token),
+                    this.getEthUsdPrice()
+                ]);
+                let v2Price = null;
+                let v3Price = null;
+                let price_usd = null;
+                if (v2Pool) {
+                    v2Price = yield this.getV2PriceWeth(v2Pool);
+                    price_usd = v2Price * eth_usd;
+                }
+                if (v3Pool) {
+                    v3Price = yield this.getV3PriceWeth(v3Pool);
+                    price_usd = v3Price * eth_usd;
+                }
+                return {
+                    v2Pool,
+                    v3Pool,
+                    v2Price,
+                    v3Price,
+                    price_usd
+                };
             }
-            if (v3Pool) {
-                v3Price = yield this.getV3PriceWeth(v3Pool);
-                price_usd = v3Price * eth_usd;
+            catch (error) {
+                throw new Error("Failed to get price information.\n" + error);
             }
-            return {
-                v2Pool,
-                v3Pool,
-                v2Price,
-                v3Price,
-                price_usd
-            };
         });
     }
 }

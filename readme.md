@@ -1,6 +1,6 @@
 # CheckPrice
 
-A TypeScript library for checking token prices (currently on Uniswap V2 and V3 )using ethers.js.
+A TypeScript library for checking token prices (currently on Uniswap V2 and V3 Ethereum) using ethers.js.
 
 ## Installation
 

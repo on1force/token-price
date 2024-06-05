@@ -1,5 +1,5 @@
 {
-  "name": "token-price",
+  "name": "@on1force/token-price",
   "version": "1.0.0",
   "description": "A library to check token prices",
   "main": "dist/index.js",

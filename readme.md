@@ -81,4 +81,4 @@ Get the ETH/USD price oracle.
 MIT
 
 ## Author
-[on1force]("https://github.com/on1force")
+[on1force](https://github.com/on1force/token-price)

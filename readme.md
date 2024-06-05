@@ -13,7 +13,7 @@ npm install @on1force/token-price
 ## Usage
 ### Initiate
 ```typescript
-import { CheckPrice } from '@on1force/token-price';
+import CheckPrice from '@on1force/token-price';
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');

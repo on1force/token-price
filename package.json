@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "A library to check token prices",
   "main": "dist/index.js",
-  "types": "dist/TokenPriceChecker.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "node ./dist/index.js",
     "dev": "pnpm ts-node test.ts",

@@ -60,11 +60,8 @@ Creates a new instance of the CheckPrice class.
 - `provider`: An instance of `ethers.AbstractProvider`.
   
 `getPrice(token: string): Promise<{
-v2Pool?: string,
-v2Price?: number,
-v3Pool?: string,
-v3Price?: number,
-price_usd: number
+price_eth: number | null,
+price_usd: number | null
 } | null>`
 Get the price of a token in USD & ETH.
 

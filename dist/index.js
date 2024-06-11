@@ -127,11 +127,8 @@ class CheckPrice {
     * Gets the price of the token in USD by checking Uniswap V2 and V3 pools.
     * @param {string} token - The address of the token.
     * @returns {Promise<{
-    *   v2Pool?: string,
-    *   v2Price?: number,
-    *   v3Pool?: string,
-    *   v3Price?: number,
-    *   price_usd: number
+    *   price_eth: number | null,
+    *   price_usd: number | null
     * } | null>} - The price information or null if no pools are found.
     */
     getPrice(token) {
@@ -142,22 +139,18 @@ class CheckPrice {
                     this.getV3Pool(token),
                     this.getEthUsdPrice()
                 ]);
-                let v2Price = null;
-                let v3Price = null;
+                let price_eth = null;
                 let price_usd = null;
                 if (v2Pool) {
-                    v2Price = yield this.getV2PriceWeth(v2Pool);
-                    price_usd = v2Price * eth_usd;
+                    price_eth = yield this.getV2PriceWeth(v2Pool);
+                    price_usd = price_eth * eth_usd;
                 }
                 if (v3Pool) {
-                    v3Price = yield this.getV3PriceWeth(v3Pool);
-                    price_usd = v3Price * eth_usd;
+                    price_eth = yield this.getV3PriceWeth(v3Pool);
+                    price_usd = price_eth * eth_usd;
                 }
                 return {
-                    v2Pool,
-                    v3Pool,
-                    v2Price,
-                    v3Price,
+                    price_eth,
                     price_usd
                 };
             }

@@ -1,11 +1,11 @@
 import { AbstractProvider } from "ethers";
 declare class CheckPrice {
-    provider: AbstractProvider;
-    uniswapV2FactoryAddress: string;
-    uniswapV3FactoryAddress: string;
-    chainlinkOracleAddress: string;
-    WETH_ADDRESS: string;
-    feeTiers: number[];
+    private provider;
+    private readonly uniswapV2FactoryAddress;
+    private readonly uniswapV3FactoryAddress;
+    private readonly chainlinkOracleAddress;
+    private readonly WETH_ADDRESS;
+    private readonly feeTiers;
     /**
      * @param provider - The provider to use for querying the blockchain.
      */
@@ -43,18 +43,12 @@ declare class CheckPrice {
     * Gets the price of the token in USD by checking Uniswap V2 and V3 pools.
     * @param {string} token - The address of the token.
     * @returns {Promise<{
-    *   v2Pool?: string,
-    *   v2Price?: number,
-    *   v3Pool?: string,
-    *   v3Price?: number,
-    *   price_usd: number
+    *   price_eth: number | null,
+    *   price_usd: number | null
     * } | null>} - The price information or null if no pools are found.
     */
     getPrice(token: string): Promise<{
-        v2Pool: string | null;
-        v3Pool: string | null;
-        v2Price: number | null;
-        v3Price: number | null;
+        price_eth: number | null;
         price_usd: number | null;
     }>;
 }
